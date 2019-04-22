@@ -90,5 +90,9 @@
       "eslint --fix",
       "git add"
     ]
-  }
+  },
+  "files": [
+    "types",
+    "core"
+  ]
 }
