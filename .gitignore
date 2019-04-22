@@ -7,3 +7,4 @@ coverage
 
 tests/.invoke
 .vscode
+.idea

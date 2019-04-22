@@ -5,6 +5,7 @@ const fse = require('fs-extra');
 const chokidar = require('chokidar');
 const { replaceVue } = require('./utils');
 const isFile = dir => fs.statSync(dir).isFile();
+const beautify = require('js-beautify').js;
 
 let isRunning = false;
 
@@ -14,6 +15,12 @@ const root = process.cwd();
 exports.root = root;
 
 function writeFile(options) {
+  const opts = {
+    indent_size: 2,
+    space_in_empty_paren: true,
+    end_with_newline: true
+  };
+  this.routeString = beautify(this.routeString, opts);
   if (!fs.existsSync(this.routerDir)) {
     if (options.routerDir) {
       fse.ensureDirSync(`${root}/${options.routerDir}/.invoke`);

@@ -20,10 +20,15 @@ const {
   generateIgnoreFiles,
   generateModules
 } = require('./files');
-let routeStringPreJs = modules =>
-  `import Vue from 'vue';import Router from 'vue-router';${modules};Vue.use(Router);export const routes = [`;
-let routeStringPreTs = modules =>
-  `import Vue from 'vue';import Router, { RouteConfig } from 'vue-router';${modules};Vue.use(Router);export const routes: RouteConfig[] = [`;
+let routeStringPreJs = modules => {
+  const newModules = modules ? `${modules};` : '';
+  return `import Vue from 'vue';import Router from 'vue-router';${newModules}Vue.use(Router);export const routes = [`;
+};
+let routeStringPreTs = modules => {
+  const newModules = modules ? `${modules};` : '';
+  return `import Vue from 'vue';import Router, { RouteConfig } from 'vue-router';${newModules}Vue.use(Router);export const routes: RouteConfig[] = [`;
+};
+
 let routeStringPostFn = (mode, behavior) =>
   `];const router = new Router({mode: '${mode}',routes,${behavior &&
     'scrollBehavior:' + behavior}});`;
