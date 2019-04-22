@@ -22,27 +22,9 @@ cnpm install vue-router-invoke-webpack-plugin -D
 yarn add vue-router-invoke-webpack-plugin -D
 ```
 
-## 为什么使用`vue-router-invoke-webpack-plugin`
+## 什么是路由自动注入
 
-在单页面我们会使用`vue-router`作为路由切换的插件,但当你的页面过多比如有 50 或者 60 个页面的时候,你的`vue`文件和最后写入的`router.js`会很复杂.为了更友好的应对我们会把页面按功能分一下,相同功能的页面放在一个文件夹中,之前我们也是这么做的,但后来发现了很多问题,特别是项目在多人合作的时候
-
-- 命名规则
-
-没有统一的命名,有人喜欢下划线,有人喜欢用驼峰
-
-![image](https://github.com/Qymh/vue-router-invoke-webpack-plugin/blob/master/docs/images/name.png)
-
-- 路由的层级
-
-明明是二级路由或者三级路由,放在了和一级路由一个目录下,且命名完全看不出来路由的层级
-
-![image](https://github.com/Qymh/vue-router-invoke-webpack-plugin/blob/master/docs/images/index_cn.png)
-
-- 新人难以接受
-
-生成的路由太过复杂,且命名不够语义化,无法区分页面层级
-
-其实第一二种问题完全是可以通过`code review`去解决的,但`code review`会有一定的成本,所以我们学习了 [nuxt](https://zh.nuxtjs.org/guide/routing) 中的路由构建,我们不以`页面功能`去区分路由,而是根据文件目录结构以`路由层级`去划分路由,解决了以上三个问题
+路由自动注入是指根据文件目录的格式自动生成对应的`router.js`, 而不需要每次创建模块都去手动引用
 
 ## 用法
 
@@ -161,6 +143,8 @@ module.exports = {
 
 默认生成的`router.js`的位置在项目根路由的`.invoke`文件夹中,你可以通过`routerDir`这个配置更改默认位置
 
+要注意的是`routerDir`是相对于根路由的地址,而不是绝对地址哦
+
 我们建议把生成的`router.js`放在`.gitignore`和`.eslintignore`中,它没有必要被版本控制或者 eslint 校验,因为它是自动生成的
 
 ```javascript
@@ -176,6 +160,16 @@ export default new Vue({
 ```
 
 ### 单路由
+
+请注意,文件格式是有一层文件夹放在了外面,vue 命名为`Index.vue`而不是直接命名 vue 文件,这一点可能和平常的认知不太一样
+
+同样的,也不要去命名文件夹名字为`Index`这会与嵌套路由的判断产生歧义
+
+> 0.2.7 的版本我们引入了暴力提醒 第一次打包的时候如果命名规则和期望值不同,插件会直接报错,在开发环境下插件不会中断程序运行,但会高亮报错信息,比如这样
+
+![image](https://github.com/Qymh/vue-router-invoke-webpack-plugin/blob/master/docs/images/notice.png)
+
+如果你发现此类的提醒,可以检查下文件格式是否符合规则
 
 如果你的文件是这样的
 

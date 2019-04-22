@@ -1,11 +1,11 @@
 {
-  "name": "vue-router-invoke-webpack-plugin",
-  "version": "0.2.5",
+  "name": "@liwb/vue-router-invoke-webpack-plugin",
+  "version": "0.2.9",
   "description": "automatic generate your vue-router path and stronger normalize your file directory",
   "main": "core/index.js",
   "author": {
-    "name": "Qymh",
-    "email": "bowei.zhang@ankerbox.com"
+    "name": "liwb",
+    "email": "liwb@gmail.com"
   },
   "keywords": [
     "vue",
@@ -14,7 +14,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Qymh/vue-router-invoke-webpack-plugin.git"
+    "url": "git+https://github.com/cklwblove/vue-router-invoke-webpack-plugin.git"
   },
   "engines": {
     "node": ">=8.15.1"
