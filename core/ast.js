@@ -21,6 +21,11 @@ const {
   generateIgnoreFiles,
   generateModules
 } = require('./files');
+const imageReg = /\.(png|jpe?g|gif|svg)(\?.*)?$/;
+const styleReg = /\.(css|less|sass|scss|stylus)(\?.*)?$/;
+const fontReg = /\.(woff2?|eot|ttf|otf)(\?.*)?$/;
+const videoReg = /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/;
+
 let routeStringPreJs = modules => {
   const newModules = modules ? `${modules};` : '';
   return `import Vue from 'vue';import Router from 'vue-router';${newModules}Vue.use(Router);export const routes = [`;
@@ -29,7 +34,6 @@ let routeStringPreTs = modules => {
   const newModules = modules ? `${modules};` : '';
   return `import Vue from 'vue';import Router, { RouteConfig } from 'vue-router';${newModules}Vue.use(Router);export const routes: RouteConfig[] = [`;
 };
-
 let routeStringPostFn = (mode, behavior) =>
   `];const router = new Router({mode: '${mode}',routes,${behavior &&
     'scrollBehavior:' + behavior}});`;
@@ -131,11 +135,23 @@ function generateFilesAst(dir, filesAst, parent) {
         }
       });
     }
+
     curAst.dir = curDir;
     curAst.alias = `${this.alias}${replaceAlias(dir, this.dir)}/${file}`;
     curAst.isVue = /\.vue$/.test(fileLowerCase);
     curAst.file = camelize(replaceVue(fileLowerCase));
     curAst.isFile = isFile(curDir);
+
+    // 同级路径下，忽略一些静态资源，如样式文件，图片文件等
+    if (
+      curAst.isFile &&
+      (imageReg.test(curAst.file) ||
+        styleReg.test(curAst.file) ||
+        videoReg.test(curAst.file) ||
+        fontReg.test(curAst.file))
+    )
+      return;
+
     if (parent) {
       curAst.isNest = curAst.file.trim() === camelize(parent.file).trim();
       curAst.parentName = parent.parentName.concat(parent.file);
