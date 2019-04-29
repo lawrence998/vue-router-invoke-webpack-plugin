@@ -41,7 +41,9 @@ function watchFile(options, start) {
   writeFile.call(this, options);
   let watcher = chokidar.watch(this.watchDir, { persistent: true });
   watcher.on('raw', event => {
-    if (event === 'modified' || isRunning) {
+    // modified 为 macOS
+    // change 为 windows
+    if (event === 'modified' || event === 'change' || isRunning) {
       return;
     }
     isRunning = true;
