@@ -28,11 +28,9 @@ function writeFile(options) {
       fse.ensureDirSync(`${root}/.invoke`);
     }
     fs.writeFileSync(this.routerDir, this.routeString);
-    isRunning = false;
     this.isFirst = false;
   } else {
     fs.writeFileSync(this.routerDir, this.routeString);
-    isRunning = false;
     this.isFirst = false;
   }
 }
@@ -40,16 +38,26 @@ function writeFile(options) {
 function watchFile(options, start) {
   writeFile.call(this, options);
   let watcher = chokidar.watch(this.watchDir, { persistent: true });
-  watcher.on('raw', event => {
-    // modified 为 macOS
-    // change 为 windows
-    if (event === 'modified' || event === 'change' || isRunning) {
-      return;
-    }
-    isRunning = true;
-    start.call(this, options);
-    writeFile.call(this, options);
-  });
+  watcher
+    .on('addDir', path => {
+      // 防止触发多次
+      if (isRunning) return;
+      isRunning = setTimeout(() => {
+        isRunning = false;
+      }, 100);
+      // console.log(`Directory ${path} has been added`);
+      start.call(this, options);
+      writeFile.call(this, options);
+    })
+    .on('unlinkDir', path => {
+      if (isRunning) return;
+      isRunning = setTimeout(() => {
+        isRunning = false;
+      }, 100);
+      // console.log(`Directory ${path} has been removed`);
+      start.call(this, options);
+      writeFile.call(this, options);
+    });
 }
 
 exports.writeOrWatchFile = function(options, start) {
