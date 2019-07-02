@@ -271,7 +271,12 @@ function generateRouteString(filesAst, pre) {
             this.routeString += `meta:{`;
             for (const meta of item.meta) {
               for (const key in meta) {
-                this.routeString += `${key}:'${meta[key]}',`;
+                // 字符串
+                if (typeof meta[key] === 'string') {
+                  this.routeString += `${key}:'${meta[key]}',`;
+                } else {
+                  this.routeString += `${key}:${meta[key]},`;
+                }
               }
             }
             this.routeString += `},`;
