@@ -36,7 +36,7 @@ let routeStringPreTs = modules => {
 };
 let routeStringPostFn = (mode, behavior) =>
   `];const router = new Router({mode: '${mode}',routes,${behavior &&
-    'scrollBehavior:' + behavior}});`;
+  'scrollBehavior:' + behavior}});`;
 let routeStringExport = 'export default router;';
 
 const modeMap = makeMap('hash,history');
@@ -76,7 +76,7 @@ function init(options) {
     warn(
       `the alias option is required, make sure you have set the alias of the dir option: ${
         options.dir
-      } `
+        } `
     );
   }
   let behavior = '';
@@ -200,7 +200,7 @@ function generateFilesAst(dir, filesAst, parent) {
               multipleError
                 ? 'is mixed with nested and single route'
                 : 'is not in accordance with the rules \n you can not name it directly without a file wraps it '
-            }\n you may check the correct use in documentation https://github.com/Qymh/vue-router-invoke-webpack-plugin#singleroute\n or you should make sure you have set it in the ignore option`
+              }\n you may check the correct use in documentation https://github.com/Qymh/vue-router-invoke-webpack-plugin#singleroute\n or you should make sure you have set it in the ignore option`
           );
           if (this.isFirst) {
             warn(
@@ -208,7 +208,7 @@ function generateFilesAst(dir, filesAst, parent) {
                 multipleError
                   ? 'is mixed by nested and single route'
                   : 'is not in accordance with the rules \n you can not name it directly without a file wraps it '
-              }\n you may check the correct use in documentation https://github.com/Qymh/vue-router-invoke-webpack-plugin#singleroute\n or you should make sure you have set it in the ignore option`
+                }\n you may check the correct use in documentation https://github.com/Qymh/vue-router-invoke-webpack-plugin#singleroute\n or you should make sure you have set it in the ignore option`
             );
           }
         }
@@ -260,24 +260,41 @@ function generateRouteString(filesAst, pre) {
             {
               component: () => import('${item.alias}'),
               name:'${
-                item.parentName.length
-                  ? item.parentName
-                      .map(v => replaceArtificialDynamic(v))
-                      .join('-')
-                  : 'index'
-              }',
+            item.parentName.length
+              ? item.parentName
+                .map(v => replaceArtificialDynamic(v))
+                .join('-')
+              : 'index'
+            }',
               `;
           if (item.meta) {
             this.routeString += `meta:{`;
-            for (const meta of item.meta) {
-              for (const key in meta) {
-                // 字符串
-                if (typeof meta[key] === 'string') {
-                  this.routeString += `${key}:'${meta[key]}',`;
-                } else {
-                  this.routeString += `${key}:${meta[key]},`;
+            // meta:
+            //   - title: title
+            //   - keepAlive: true
+            if (Array.isArray(item.meta)) {
+              for (const meta of item.meta) {
+                for (const key in meta) {
+                  // 字符串
+                  if (typeof meta[key] === 'string') {
+                    this.routeString += `${key}:'${meta[key]}',`;
+                  } else {
+                    this.routeString += `${key}:${meta[key]},`;
+                  }
                 }
               }
+            } else {
+              // meta:
+              //   title: title
+              //   keepAlive: true
+              Object.keys(item.meta).forEach((key) => {
+                // 字符串
+                if (typeof item.meta[key] === 'string') {
+                  this.routeString += `${key}:'${item.meta[key]}',`;
+                } else {
+                  this.routeString += `${key}:${item.meta[key]},`;
+                }
+              });
             }
             this.routeString += `},`;
           }
