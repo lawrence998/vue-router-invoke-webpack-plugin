@@ -28,7 +28,7 @@ function start(options) {
 
 exports.start = start;
 
-exports.invoke = function (options) {
+exports.invoke = function(options) {
   start.call(this, options);
   writeOrWatchFile.call(this, options, start);
 };

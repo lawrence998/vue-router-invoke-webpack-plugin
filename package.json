@@ -1,6 +1,6 @@
 {
   "name": "@liwb/vue-router-invoke-webpack-plugin",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "automatic generate your vue-router path and stronger normalize your file directory",
   "main": "core/index.js",
   "author": {
@@ -24,6 +24,7 @@
   "scripts": {
     "check": "yarn upgrade-interactive --latest",
     "lint:corejs": "eslint \"core/**/*.js\"",
+    "lint:fix": "eslint --fix \"core/**/*.js\"",
     "lint:demosjs": "eslint \"demos/**/*.{js,vue} \"",
     "lint:js": "npm run lint:corejs && npm run lint:demosjs",
     "lint:style": "stylelint \"demos/**/*.{js,vue}\"",

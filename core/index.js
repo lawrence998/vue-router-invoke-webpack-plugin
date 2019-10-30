@@ -1,6 +1,6 @@
 'use strict';
 
-const {invoke} = require('./invoke');
+const { invoke } = require('./invoke');
 
 class VueRouterInvokeWebpackPlugin {
   constructor(options) {

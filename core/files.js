@@ -3,7 +3,7 @@
 const fs = require('fs');
 const fse = require('fs-extra');
 const chokidar = require('chokidar');
-const {replaceVue} = require('./utils');
+const { replaceVue } = require('./utils');
 const isFile = dir => fs.statSync(dir).isFile();
 const beautify = require('js-beautify').js;
 
@@ -37,7 +37,7 @@ function writeFile(options) {
 
 function watchFile(options, start) {
   writeFile.call(this, options);
-  let watcher = chokidar.watch(this.watchDir, {persistent: true});
+  let watcher = chokidar.watch(this.watchDir, { persistent: true });
   watcher
     .on('addDir', path => {
       // 防止触发多次
@@ -60,12 +60,12 @@ function watchFile(options, start) {
     });
 }
 
-exports.writeOrWatchFile = function (options, start) {
+exports.writeOrWatchFile = function(options, start) {
   const isDev = process.env.NODE_ENV === 'development';
   isDev ? watchFile.call(this, options, start) : writeFile.call(this, options);
 };
 
-exports.getRouterDir = function (options) {
+exports.getRouterDir = function(options) {
   let routerDir = options.routerDir;
   let ext = options.language
     ? options.language === 'javascript'
@@ -79,11 +79,11 @@ exports.getRouterDir = function (options) {
   }
 };
 
-exports.getWatchDir = function (options) {
+exports.getWatchDir = function(options) {
   this.watchDir = `${root}/${options.dir}`;
 };
 
-exports.generateIgnoreFiles = function (options) {
+exports.generateIgnoreFiles = function(options) {
   options.ignore = options.ignore
     ? [...options.ignore, '.dsstore']
     : ['.dsstore'];
@@ -92,8 +92,8 @@ exports.generateIgnoreFiles = function (options) {
   this.ignoreRegExp = reg;
 };
 
-exports.generateRedirectRoute = function (options) {
-  const {redirect} = options;
+exports.generateRedirectRoute = function(options) {
+  const { redirect } = options;
   if (!redirect) {
     return;
   }
@@ -107,7 +107,7 @@ exports.generateRedirectRoute = function (options) {
   }
 };
 
-exports.generateGuards = function (options) {
+exports.generateGuards = function(options) {
   if (options.beforeEach) {
     const str = options.beforeEach.toString();
     this.routeString += `
@@ -128,7 +128,7 @@ exports.generateGuards = function (options) {
   }
 };
 
-exports.generateModules = function (options) {
+exports.generateModules = function(options) {
   let str = '';
   if (options.modules) {
     for (const module of options.modules) {
@@ -138,7 +138,7 @@ exports.generateModules = function (options) {
   return str;
 };
 
-exports.generateNotFound = function (options) {
+exports.generateNotFound = function(options) {
   if (options.notFound) {
     this.routeString += `
       {
