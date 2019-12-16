@@ -88,8 +88,7 @@ exports.generateIgnoreFiles = function(options) {
     ? [...options.ignore, '.dsstore']
     : ['.dsstore'];
   options.ignore = options.ignore.map(replaceVue);
-  const reg = new RegExp(`(${options.ignore.join('|')})`, 'ig');
-  this.ignoreRegExp = reg;
+  this.ignoreRegExp = new RegExp(`(${options.ignore.join('|')})`, 'ig');
 };
 
 exports.generateRedirectRoute = function(options) {
