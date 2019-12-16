@@ -7,19 +7,19 @@
 ### npm
 
 ```javascript
-npm install vue-router-invoke-webpack-plugin -D
+npm install @liwb/vue-router-invoke-webpack-plugin -D
 ```
 
 ### cnpm
 
 ```javascript
-cnpm install vue-router-invoke-webpack-plugin -D
+cnpm install @liwb/vue-router-invoke-webpack-plugin -D
 ```
 
 ### yarn
 
 ```javascript
-yarn add vue-router-invoke-webpack-plugin -D
+yarn add @liwb/vue-router-invoke-webpack-plugin -D
 ```
 
 ## 什么是路由自动注入
@@ -35,7 +35,7 @@ yarn add vue-router-invoke-webpack-plugin -D
 - 自动构建的路由是懒加载的,所以你需要引用一个 babel 插件[@babel/plugin-syntax-dynamic-import](https://babeljs.io/docs/en/next/babel-plugin-syntax-dynamic-import.html)
 
 ```javascript
-const VueRouterInvokeWebpackPlugin = require('vue-router-invoke-webpack-plugin');
+const VueRouterInvokeWebpackPlugin = require('@liwb/vue-router-invoke-webpack-plugin');
 const path = require('path')
 
 // 省略掉其他配置...
@@ -61,7 +61,7 @@ vuecli3 会比 webpack 配置容易点
 `vue.config.js`
 
 ```javascript
-const VueRouterInvokeWebpackPlugin = require('vue-router-invoke-webpack-plugin');
+const VueRouterInvokeWebpackPlugin = require('@liwb/vue-router-invoke-webpack-plugin');
 
 module.exports = {
   // 省略掉其他配置...
@@ -124,7 +124,7 @@ module.exports = {
 `vue.config.js`
 
 ```javascript
-const VueRouterInvokeWebpackPlugin = require('vue-router-invoke-webpack-plugin');
+const VueRouterInvokeWebpackPlugin = require('@liwb/vue-router-invoke-webpack-plugin');
 
 module.exports = {
   // 省略其他配置
@@ -466,6 +466,8 @@ meta:
 }
 ```
 
+> 在版本 0.4.1 后,meta 的类型支持了布尔、字符串、数组、原生对象,但是类型并不支持`JSON.stringify`无法转移的值比如`Symbol`、函数、`undefined`、循环引用的对象
+
 ## 特殊的配置
 
 ### 404 路由
@@ -597,6 +599,46 @@ plugins: [
 {
   path: '/demo',
   redirect: '/test'
+}
+```
+
+#### 重定向 yml 配置
+
+> '0.4.0'版本之后 你可以在 yml 中配置重定向
+
+举个列子
+
+```javascript
+src/views
+├── Single
+│   ├── Index.vue
+│   └── User
+│       ├── Index.vue
+│       └── meta.yml
+```
+
+`meta.yml`
+
+```yml
+redirect:
+  - path: /test
+```
+
+自动生成的路由会变成这样
+
+```javascript
+{
+  component: () => import('@/views/Single/Index.vue'),
+  name: 'single',
+  path: 'single'
+},
+{
+  component: () => import('@/views/Single/User/Index.vue'),
+  name: 'single-user',
+  path: 'single/user',
+  redirect: {
+    path: '/test'
+  },
 }
 ```
 

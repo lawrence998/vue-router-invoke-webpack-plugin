@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs');
-const yamljs = require('yamljs');
+const yamljs = require('js-yaml');
 const {
   warn,
   tips,
@@ -27,18 +27,18 @@ const fontReg = /\.(woff2?|eot|ttf|otf)(\?.*)?$/;
 const videoReg = /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/;
 const scriptReg = /\.(js|ts)(\?.*)?$/;
 
-let routeStringPreJs = modules => {
+const routeStringPreJs = modules => {
   const newModules = modules ? `${modules};` : '';
   return `import Vue from 'vue';import Router from 'vue-router';${newModules}Vue.use(Router);export const routes = [`;
 };
-let routeStringPreTs = modules => {
+const routeStringPreTs = modules => {
   const newModules = modules ? `${modules};` : '';
   return `import Vue from 'vue';import Router, { RouteConfig } from 'vue-router';${newModules}Vue.use(Router);export const routes: RouteConfig[] = [`;
 };
-let routeStringPostFn = (mode, behavior) =>
+const routeStringPostFn = (mode, behavior) =>
   `];const router = new Router({mode: '${mode}',routes,${behavior &&
     'scrollBehavior:' + behavior}});`;
-let routeStringExport = 'export default router;';
+const routeStringExport = 'export default router;';
 
 const modeMap = makeMap('hash,history');
 const languageMap = makeMap('javascript,typescript');
@@ -57,9 +57,9 @@ let nestCollections = {};
  * @param {Object} options
  */
 function init(options) {
-  let mode = options.mode || 'history';
-  let language = options.language || 'javascript';
-  let meta = options.meta || 'meta';
+  const mode = options.mode || 'history';
+  const language = options.language || 'javascript';
+  const meta = options.meta || 'meta';
   if (!modeMap(mode)) {
     warn(
       `the mode can only be hash or history, make sure you have set the value correctly`
@@ -75,16 +75,14 @@ function init(options) {
   }
   if (!options.alias) {
     warn(
-      `the alias option is required, make sure you have set the alias of the dir option: ${
-        options.dir
-      } `
+      `the alias option is required, make sure you have set the alias of the dir option: ${options.dir} `
     );
   }
   let behavior = '';
   if (options.scrollBehavior) {
     behavior = options.scrollBehavior.toString();
   }
-  let modules = generateModules(options);
+  const modules = generateModules(options);
   this.isFirst = this.isFirst !== false;
   this.metaYmlReg = '';
   this.routerDir = '';
@@ -129,7 +127,13 @@ function generateFilesAst(dir, filesAst, parent) {
     const curDir = `${root}/${dir}/${file}`;
     if (this.metaYmlReg.test(file)) {
       const ymlStr = fs.readFileSync(curDir, 'utf8');
-      const ymlObj = yamljs.parse(ymlStr);
+      let ymlObj;
+      try {
+        ymlObj = yamljs.load(ymlStr);
+      } catch (error) {
+        tips(error.message);
+        ymlObj = undefined;
+      }
       parent.children.map(v => {
         if (!this.metaYmlReg.test(v.file) && v.isFile) {
           v.meta = ymlObj && ymlObj.meta;
@@ -238,6 +242,23 @@ function sortFilesAst(filesAst) {
 }
 
 /**
+ * keep original value
+ * @param {string} key
+ * @param {any} value
+ */
+function handleKeyValueType(key, value) {
+  const type = typeof value;
+  switch (type) {
+    case 'object':
+      return `${key}: ${JSON.stringify(value)},`;
+    case 'string':
+      return `${key}: '${value}',`;
+    default:
+      return `${key}: ${value},`;
+  }
+}
+
+/**
  *
  * @param {Array} filesAst
  * @param {Object} pre
@@ -271,32 +292,19 @@ function generateRouteString(filesAst, pre) {
               `;
           if (item.meta) {
             this.routeString += `meta:{`;
-            // meta:
-            //   - title: title
-            //   - keepAlive: true
-            if (Array.isArray(item.meta)) {
-              for (const meta of item.meta) {
-                for (const key in meta) {
-                  // 字符串
-                  if (typeof meta[key] === 'string') {
-                    this.routeString += `${key}:'${meta[key]}',`;
-                  } else {
-                    this.routeString += `${key}:${meta[key]},`;
-                  }
-                }
+            for (const meta of item.meta) {
+              for (const key in meta) {
+                this.routeString += handleKeyValueType(key, meta[key]);
               }
-            } else {
-              // meta:
-              //   title: title
-              //   keepAlive: true
-              Object.keys(item.meta).forEach(key => {
-                // 字符串
-                if (typeof item.meta[key] === 'string') {
-                  this.routeString += `${key}:'${item.meta[key]}',`;
-                } else {
-                  this.routeString += `${key}:${item.meta[key]},`;
-                }
-              });
+            }
+            this.routeString += `},`;
+          }
+          if (item.redirect) {
+            this.routeString += `redirect:{`;
+            for (const redirect of item.redirect) {
+              for (const key in redirect) {
+                this.routeString += `${key}:'${redirect[key]}',`;
+              }
             }
             this.routeString += `},`;
           }

@@ -25,9 +25,9 @@ function testPlugin(options, expectVal, notExpectVal) {
     );
     file = file.replace(/\s/g, '');
     if (expectVal) {
-      expect(new RegExp(expectVal, 'gi').test(file)).toBeTruthy();
+      expect(new RegExp(expectVal, 'i').test(file)).toBeTruthy();
     } else {
-      expect(new RegExp(notExpectVal, 'gi').test(file)).toBeFalsy();
+      expect(new RegExp(notExpectVal, 'i').test(file)).toBeFalsy();
     }
   }
 }
@@ -132,6 +132,42 @@ describe('option', () => {
     testPlugin(
       { dir: 'tests/metaTest', alias: '@/metaTest' },
       `meta\\:\\{name\\:\\'metaTest\\'`
+    );
+    removeFile('metaTest');
+  });
+
+  it('boolean smeta', () => {
+    removeFile('metaTest');
+    makeFile('metaTest/login/Index.vue');
+    makeFile('metaTest/login/meta.yml');
+    writeFile(
+      'metaTest/login/meta.yml',
+      `
+      meta:
+        - name: true
+    `
+    );
+    testPlugin(
+      { dir: 'tests/metaTest', alias: '@/metaTest' },
+      `meta\\:\\{name\\:true`
+    );
+    removeFile('metaTest');
+  });
+
+  it('redirect', () => {
+    removeFile('metaTest');
+    makeFile('metaTest/login/Index.vue');
+    makeFile('metaTest/login/meta.yml');
+    writeFile(
+      'metaTest/login/meta.yml',
+      `
+      redirect:
+        - path: /test
+    `
+    );
+    testPlugin(
+      { dir: 'tests/metaTest', alias: '@/metaTest' },
+      `redirect\\:\\{path\\:\\'/test\\'`
     );
     removeFile('metaTest');
   });
