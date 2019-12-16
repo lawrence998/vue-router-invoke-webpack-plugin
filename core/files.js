@@ -37,7 +37,7 @@ function writeFile(options) {
 
 function watchFile(options, start) {
   writeFile.call(this, options);
-  let watcher = chokidar.watch(this.watchDir, { persistent: true });
+  const watcher = chokidar.watch(this.watchDir, { persistent: true });
   watcher
     .on('addDir', path => {
       // 防止触发多次
@@ -66,8 +66,8 @@ exports.writeOrWatchFile = function(options, start) {
 };
 
 exports.getRouterDir = function(options) {
-  let routerDir = options.routerDir;
-  let ext = options.language
+  const routerDir = options.routerDir;
+  const ext = options.language
     ? options.language === 'javascript'
       ? '.js'
       : '.ts'
@@ -88,7 +88,7 @@ exports.generateIgnoreFiles = function(options) {
     ? [...options.ignore, '.dsstore']
     : ['.dsstore'];
   options.ignore = options.ignore.map(replaceVue);
-  let reg = new RegExp(`(${options.ignore.join('|')})`, 'ig');
+  const reg = new RegExp(`(${options.ignore.join('|')})`, 'ig');
   this.ignoreRegExp = reg;
 };
 
